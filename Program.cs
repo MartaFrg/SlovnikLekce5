@@ -11,6 +11,7 @@ namespace SlovnikLekce5
     {
         static string cesta = @"C:\Czechitas\";
         static Dictionary<String, List<String>> slovnik = new Dictionary<String, List<String>>();
+        static bool ulozeno = true;
         static void Main(string[] args)
         {
             if (!Directory.Exists(cesta)) Directory.CreateDirectory(cesta); 
@@ -23,8 +24,8 @@ namespace SlovnikLekce5
             String slovo, preklad;
             List<String> prekladList = new List<String>();
             int volba;
-            Console.WriteLine("Vyber číselnou volbu: \n 1) Přelož slovo \n 2) Přidej překlad slova do slovníku \n 3) Přidání nového překladu slova \n 4) Ulož změny do souboru \n 5) Vypiš všechna uložená slova \n 6) Ukonči \n");
-            while (!int.TryParse(Console.ReadLine(), out volba) || (volba < 1) || (volba > 5)) Console.WriteLine("Zadej číslo od 1 do 6.");
+            Console.WriteLine("Vyber číselnou volbu: \n 1) Přelož slovo \n 2) Přidej překlad slova do slovníku \n 3) Změň překlad slova \n 4) Ulož změny do souboru \n 5) Vypiš všechna slova \n 6) Ukonči \n");
+            while (!int.TryParse(Console.ReadLine(), out volba) || (volba < 1) || (volba > 6)) Console.WriteLine("Zadej číslo od 1 do 6.");
             switch (volba)
             {
                 case 1:
@@ -55,6 +56,7 @@ namespace SlovnikLekce5
                     Console.WriteLine("Napiš překlad tohoto slova, můžeš zadat i více překladů, pro ukončení odentruj prázdný řádek: ");
                     while (!String.IsNullOrWhiteSpace(preklad = Console.ReadLine())) prekladList.Add(preklad);
                     slovnik.Add(slovo, prekladList);
+                    ulozeno = false;
                     VyberMenu();
                     break;
                 case 3:
@@ -62,7 +64,9 @@ namespace SlovnikLekce5
                     slovo = Console.ReadLine();
                     Console.WriteLine("slovo " + slovo + " je ve slovníku přeloženo jako: " + String.Join(", ", slovnik[slovo]));
                     Console.WriteLine("Napiš nový překlad, můžeš zadat i více překladů, pro ukončení odentruj prázdný řádek: ");
+                    slovnik[slovo].Clear();
                     while (!String.IsNullOrWhiteSpace(preklad = Console.ReadLine())) slovnik[slovo].Add(preklad);
+                    ulozeno = false;
                     Console.WriteLine();
                     VyberMenu();
                     break;
@@ -75,10 +79,13 @@ namespace SlovnikLekce5
                     }
                     File.AppendAllText(cesta + "slovnik.txt", sb.ToString());
                     Console.WriteLine("Změny byly uloženy do souboru.\n");
+                    ulozeno = true;
                     VyberMenu();
                     break;
                 case 5:
-                    foreach (KeyValuePair<String, List<String>> kvp in slovnik) Console.WriteLine("uložen překlad slova " + kvp.Key);
+                    foreach (KeyValuePair<String, List<String>> kvp in slovnik) Console.WriteLine("ve slovníku je slovo " + kvp.Key);
+                    if (ulozeno) Console.WriteLine("Všechna slova jsou uložena v souboru.");
+                    else Console.WriteLine("Některá slova nejsou uložena v souboru!");
                     Console.WriteLine();
                     VyberMenu();
                     break;
